@@ -1,0 +1,84 @@
+
+CREATE TABLE employee (
+    empid INT PRIMARY KEY,
+    firstname VARCHAR(50),
+    lastname VARCHAR(50)
+);
+CREATE TABLE manager (
+    manager_name VARCHAR(50),
+    empid INT,
+    FOREIGN KEY (empid) REFERENCES employee(empid)
+);
+INSERT INTO employee (empid, firstname, lastname) VALUES
+(101, 'Raj', 'Singh'),
+(102, 'Roshan', 'Barik'),
+(103, 'Yash', 'Sinha'),
+(104, 'Ankita', 'Dash'),
+(105, 'Shivam', 'Maliviya'),
+(106, 'Shubra', 'Gupta'),
+(107, 'Ram', 'Kumar'),
+(108, 'Sujal', 'Singh'),
+(109, 'Shristi', 'Dash'),
+(110, 'Swarnam', 'Rao'),
+(111, 'Aman', 'Singhal'),
+(112, 'Ayush', 'Kumar');
+
+INSERT INTO manager (manager_name, empid) VALUES
+('Mongia', 102),
+('Babil', 105),
+('Gary', 108),
+('Frankinstein', 109),
+('Ranjan', 101),
+('Amit', 103),
+('Babil', 111),
+('Amit', 108),
+('Eva', 104),
+('Frankinstein', 106),
+('Ranjan', 112),
+('Gary', 107),
+('Mongia', 110);
+
+
+select * from employee;
+select * from manager order by manager_name;
+
+-- Get all employees under each manager 
+SELECT m.manager_name, e.firstname, e.lastname
+FROM manager m
+JOIN employee e ON m.empid = e.empid
+ORDER BY m.manager_name;
+
+-- How many employees are there under manager "Amit"
+SELECT COUNT(e.empid) AS employee_count
+FROM manager m
+JOIN employee e ON m.empid = e.empid
+WHERE m.manager_name = 'Amit';
+
+-- Get all manager details
+SELECT DISTINCT manager_name
+FROM manager;
+
+-- Find any employees who are not assigned to any manager
+SELECT e.empid, e.firstname, e.lastname
+FROM employee e
+LEFT JOIN manager m ON e.empid = m.empid
+WHERE m.empid IS NULL;
+
+-- Write a function to get full name (first_name_last_name)
+DELIMITER //
+
+CREATE FUNCTION get_full_name(emp_id INT) RETURNS VARCHAR(100)
+DETERMINISTIC
+BEGIN
+    DECLARE full_name VARCHAR(100);
+    SELECT CONCAT(firstname, ' ', lastname) INTO full_name
+    FROM employee
+    WHERE empid = emp_id;
+    RETURN full_name;
+END //
+
+DELIMITER ;
+
+SELECT get_full_name(103) AS full_name;
+
+
